@@ -1,4 +1,3 @@
-<script>
 // Definisci la classe TextSplitter direttamente nel tuo script
 class TextSplitter {
   constructor(element, options) {
@@ -119,4 +118,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
   init();
 });
-</script>
