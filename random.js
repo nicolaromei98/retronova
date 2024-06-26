@@ -8,24 +8,23 @@
                 let isAnimating = false;
                 if (isAnimating) return;
                 isAnimating = true;
-                let t = 0;
-
-                function shuffleChar(char, i = 0) {
-                    if (i >= 9) {
-                        char.innerText = char.dataset.original;
-                        t++;
-                        if (t === chars.length) {
-                            isAnimating = false;
-                        }
-                        return;
-                    }
-                    char.innerText = getRandomChar();
-                    setTimeout(() => shuffleChar(char, i + 1), 80);
-                }
 
                 chars.forEach(char => {
                     char.dataset.original = char.innerText;
-                    setTimeout(() => shuffleChar(char), Math.random() * 2000);
+                });
+
+                chars.forEach((char, index) => {
+                    (function shuffle(i) {
+                        if (i >= 9) {
+                            char.innerText = char.dataset.original;
+                            if (index === chars.length - 1) {
+                                isAnimating = false;
+                            }
+                            return;
+                        }
+                        char.innerText = getRandomChar();
+                        setTimeout(() => shuffle(i + 1), 80);
+                    })(0);
                 });
             }
 
