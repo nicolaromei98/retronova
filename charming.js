@@ -1,3 +1,5 @@
+console.log("charming.js loaded");
+
 !function(e) {
     "undefined" == typeof module ? this.charming = e : module.exports = e
 }(function(e, n) {
