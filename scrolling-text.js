@@ -1,6 +1,6 @@
-console.log("scrolling-text.js loaded");
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("scrolling-text.js loaded");
 
-{
     const chars = ['$','%','#','@','&','(',')','=','*','/'];
     const charsTotal = chars.length;
     const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -13,6 +13,7 @@ console.log("scrolling-text.js loaded");
             console.log("Charming chiamato su:", this.DOM.title.word);
             charming(this.DOM.title.word);
             this.DOM.title.letters = Array.from(this.DOM.title.word.querySelectorAll('span')).sort(() => 0.5 - Math.random());
+            console.log("Lettere trovate:", this.DOM.title.letters.length);
             this.DOM.title.letters.forEach(letter => letter.dataset.initial = letter.innerHTML);
             this.lettersTotal = this.DOM.title.letters.length;
             observer.observe(this.DOM.el);
@@ -57,33 +58,43 @@ console.log("scrolling-text.js loaded");
         }
     }
 
-    let observer;
-    let current = -1;
-    let allentries = [];
-    const sections = Array.from(document.querySelectorAll('.content__section'));
-    console.log("Sections trovate:", sections.length);
+    function init() {
+        if (!document.body) {
+            console.error("document.body non trovato. Riprova...");
+            setTimeout(init, 100);
+            return;
+        }
 
-    if ('IntersectionObserver' in window) {
-        console.log("IntersectionObserver supportato.");
-        document.body.classList.add('ioapi');
+        let observer;
+        let current = -1;
+        let allentries = [];
+        const sections = Array.from(document.querySelectorAll('.content__section'));
+        console.log("Sections trovate:", sections.length);
 
-        observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if ( entry.intersectionRatio > 0.5 ) {
-                    const newcurrent = sections.indexOf(entry.target);
-                    if ( newcurrent === current ) return;
-                    const direction = newcurrent > current;
-                    console.log("Sezione corrente:", current, "Nuova sezione:", newcurrent);
-                    if (current >= 0 ) {
-                        allentries[current].exit(direction ? 'down' : 'up');
+        if ('IntersectionObserver' in window) {
+            console.log("IntersectionObserver supportato.");
+            document.body.classList.add('ioapi');
+
+            observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if ( entry.intersectionRatio > 0.5 ) {
+                        const newcurrent = sections.indexOf(entry.target);
+                        if ( newcurrent === current ) return;
+                        const direction = newcurrent > current;
+                        console.log("Sezione corrente:", current, "Nuova sezione:", newcurrent);
+                        if (current >= 0 ) {
+                            allentries[current].exit(direction ? 'down' : 'up');
+                        }
+                        allentries[newcurrent].enter(direction ? 'down' : 'up');
+                        current = newcurrent;
                     }
-                    allentries[newcurrent].enter(direction ? 'down' : 'up');
-                    current = newcurrent;
-                }
-            });
-        }, { threshold: 0.5 });
+                });
+            }, { threshold: 0.5 });
 
-        sections.forEach(section => allentries.push(new Entry(section)));
-        console.log("Entry creata per sezione.");
+            sections.forEach(section => allentries.push(new Entry(section)));
+            console.log("Entry creata per sezione.");
+        }
     }
-}
+
+    init();
+});
