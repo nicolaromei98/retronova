@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 char.innerText = char.dataset.original;
                 t++;
                 if (t === totalChars) {
-                    isAnimating = false;
+                    return; // All characters are back to original
                 }
                 return;
             }
@@ -47,7 +47,8 @@ document.addEventListener("DOMContentLoaded", function() {
     if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
+                if (entry.isIntersecting && !entry.target.dataset.animated) {
+                    entry.target.dataset.animated = true; // Mark as animated
                     const chars = entry.target.querySelectorAll('.char');
                     fx3(chars);
                 }
