@@ -29,11 +29,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Funzione per suddividere i caratteri in <span> con classe "char"
     function wrapCharsWithSpan(element) {
-        const text = element.innerText;
+        const lines = element.innerText.split('\n');
         let wrappedText = '';
-        for (const char of text) {
-            wrappedText += `<span class="char">${char}</span>`;
-        }
+
+        lines.forEach((line, index) => {
+            for (const char of line) {
+                wrappedText += `<span class="char">${char}</span>`;
+            }
+            if (index < lines.length - 1) {
+                wrappedText += '<br>';
+            }
+        });
+
         element.innerHTML = wrappedText;
     }
 
