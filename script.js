@@ -1,6 +1,3 @@
-<canvas id="webgl-canvas"></canvas>
-
-<script>
 console.log("Script loaded");
 
 // Funzione per il pre-caricamento delle immagini
@@ -399,4 +396,3 @@ document.addEventListener("DOMContentLoaded", function() {
         document.body.classList.remove('loading');
     });
 });
-</script>
