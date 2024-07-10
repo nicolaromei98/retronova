@@ -1,13 +1,5 @@
-
 console.log("Script loaded");
 
-// Funzione per il pre-caricamento delle immagini (dichiarata una sola volta)
-const preloadImages = (selector = '.intro-grid__img') => {
-    console.log("Preloading images");
-    return new Promise((resolve) => {
-        imagesLoaded(document.querySelectorAll(selector), { background: true }, resolve);
-    });
-};
 
 document.addEventListener("DOMContentLoaded", function() {
     console.log("DOM fully loaded and parsed");
@@ -75,108 +67,67 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     };
 
-    // Funzione per applicare l'effetto WebGL
+    // Initialize WebGL
+    const canvas = document.getElementById('webgl-canvas');
+    const gl = canvas.getContext('webgl');
+    if (!gl) {
+        console.error("WebGL not supported, falling back on experimental-webgl");
+        gl = canvas.getContext('experimental-webgl');
+    }
+    if (!gl) {
+        alert("Your browser does not support WebGL");
+    }
+
+    // WebGL program setup
+    const vertexShaderSource = `...`;  // Your vertex shader code here
+    const fragmentShaderSource = `...`;  // Your fragment shader code here
+
+    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertexShader, vertexShaderSource);
+    gl.compileShader(vertexShader);
+
+    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragmentShader, fragmentShaderSource);
+    gl.compileShader(fragmentShader);
+
+    const shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+    gl.useProgram(shaderProgram);
+
+    // WebGL buffer setup
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    const positions = [
+        -1.0,  1.0,
+         1.0,  1.0,
+        -1.0, -1.0,
+         1.0, -1.0,
+    ];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+    const positionLocation = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+    gl.enableVertexAttribArray(positionLocation);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+    // WebGL texture setup
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
     const applyWebGLEffect = (image) => {
-        console.log("Applying WebGL effect");
-        const canvas = document.getElementById('webgl-canvas');
-        const gl = canvas.getContext('webgl');
-        if (!gl) {
-            console.error('WebGL not supported');
-            return;
-        }
-
-        // Shader sources
-        const vertexShaderSrc = `
-            attribute vec4 aVertexPosition;
-            attribute vec2 aTextureCoord;
-            uniform mat4 uMVMatrix;
-            uniform mat4 uPMatrix;
-            uniform mat4 uTextureMatrix;
-            varying highp vec2 vTextureCoord;
-            void main(void) {
-                gl_Position = uPMatrix * uMVMatrix * aVertexPosition;
-                vTextureCoord = (uTextureMatrix * vec4(aTextureCoord, 0.0, 1.0)).xy;
-            }
-        `;
-        const fragmentShaderSrc = `
-            precision mediump float;
-            varying highp vec2 vTextureCoord;
-            uniform sampler2D uSampler;
-            void main(void) {
-                gl_FragColor = texture2D(uSampler, vTextureCoord);
-            }
-        `;
-
-        // Compile shaders
-        const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-        gl.shaderSource(vertexShader, vertexShaderSrc);
-        gl.compileShader(vertexShader);
-        if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-            console.error('An error occurred compiling the vertex shader: ' + gl.getShaderInfoLog(vertexShader));
-            return;
-        }
-
-        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-        gl.shaderSource(fragmentShader, fragmentShaderSrc);
-        gl.compileShader(fragmentShader);
-        if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-            console.error('An error occurred compiling the fragment shader: ' + gl.getShaderInfoLog(fragmentShader));
-            return;
-        }
-
-        // Create shader program
-        const shaderProgram = gl.createProgram();
-        gl.attachShader(shaderProgram, vertexShader);
-        gl.attachShader(shaderProgram, fragmentShader);
-        gl.linkProgram(shaderProgram);
-        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-            console.error('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
-            return;
-        }
-        gl.useProgram(shaderProgram);
-
-        // Set up buffers and attributes
-        const vertexPosition = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
-        const textureCoord = gl.getAttribLocation(shaderProgram, 'aTextureCoord');
-        const vertexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        const vertices = new Float32Array([
-            -1.0, -1.0,
-            1.0, -1.0,
-            -1.0, 1.0,
-            1.0, 1.0,
-        ]);
-        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
-        const textureCoordBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
-        const textureCoordinates = new Float32Array([
-            0.0, 0.0,
-            1.0, 0.0,
-            0.0, 1.0,
-            1.0, 1.0,
-        ]);
-        gl.bufferData(gl.ARRAY_BUFFER, textureCoordinates, gl.STATIC_DRAW);
-
-        // Bind textures
-        const texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
-        // Draw scene
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        gl.vertexAttribPointer(vertexPosition, 2, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(vertexPosition);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
-        gl.vertexAttribPointer(textureCoord, 2, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(textureCoord);
-
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        console.log("Applying WebGL effect to image:", image);
+        const img = new Image();
+        img.src = image.src;
+        img.onload = () => {
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        };
     };
 
     // Show the slider
@@ -391,3 +342,4 @@ document.addEventListener("DOMContentLoaded", function() {
         document.body.classList.remove('loading');
     });
 });
+
