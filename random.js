@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Seleziona tutti gli elementi con la classe "is-random"
-    const elements = document.querySelectorAll('.is-random, .version-text');
+    const elements = document.querySelectorAll('.is-random, .version-text, .is-cms-desc');
     elements.forEach(element => wrapCharsWithSpan(element));
 
     // Utilizziamo l'IntersectionObserver per rilevare quando gli elementi entrano nel viewport
