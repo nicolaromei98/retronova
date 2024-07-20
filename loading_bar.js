@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",function(){var e=document.querySelector(".progress_full"),n=document.querySelector(".loading_text"),t=gsap.timeline({delay:2.7});t.to(e,{width:"100%",duration:3,ease:"power1.inOut"}),t.to(n,{innerHTML:100,duration:3,ease:"power1.inOut",snap:{innerHTML:1},onUpdate:function(){n.innerHTML=Math.round(n.innerHTML)+"%"}},"-=3")});
