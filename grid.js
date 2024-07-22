@@ -1,50 +1,46 @@
 $(document).ready(function() {
-    function animateOut(targetUrl) {
+    function animateOut() {
         return new Promise((resolve) => {
-            gsap.set(".load_grid", { display: "grid" });
-            gsap.fromTo(".load_grid-item", { opacity: 0 }, {
-                opacity: 1,
-                duration: 0.001,
+            gsap.to(".load_grid-item", {
+                opacity: 0,
+                duration: 0.5,
                 stagger: { amount: 0.5, from: "random" },
                 onComplete() {
-                    resolve(targetUrl);
+                    resolve();
+                }
+            });
+        });
+    }
+
+    function animateIn() {
+        gsap.fromTo(".load_grid-item", { opacity: 0 }, {
+            opacity: 1,
+            duration: 0.5,
+            stagger: { amount: 0.5, from: "random" }
+        });
+    }
+
+    function loadCollection(url) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: url,
+                success: function(data) {
+                    const newContent = $(data).find('.collection-content').html();
+                    $('.collection-content').html(newContent);
+                    resolve();
+                },
+                error: function() {
+                    reject('Failed to load collection.');
                 }
             });
         });
     }
 
     async function navigateTo(url) {
-        await animateOut(url);
-        window.location.href = url;
+        await animateOut();
+        await loadCollection(url);
+        animateIn();
     }
-
-    !function setCollectionColor() {
-        let collection = $("body").attr("data-collection");
-        let color = "#070707";
-        switch (collection) {
-            case "Space Age Glam":
-                color = "#FD8A46";
-                break;
-            case "Atomic Allure":
-                color = "#F3EDD8";
-                break;
-            case "Quantum Glamour":
-                color = "#A24EB5";
-                break;
-            case "Stellar Elegance":
-                color = "#008AA1";
-        }
-        $(".load_grid-item").css("background-color", color);
-    }();
-
-    gsap.to(".load_grid-item", {
-        opacity: 0,
-        duration: 0.001,
-        stagger: { amount: 0.7, from: "random" },
-        onComplete() {
-            gsap.set(".load_grid", { display: "none" });
-        }
-    });
 
     $("a").on("click", function(event) {
         if ($(this).prop("hostname") === window.location.host && $(this).attr("href").indexOf("#") === -1 && $(this).attr("target") !== "_blank") {
@@ -57,14 +53,7 @@ $(document).ready(function() {
     $(document).on("click", ".next_collection", function(event) {
         event.preventDefault();
         let url = $(this).attr("href");
-        gsap.to(".load_grid-item", {
-            opacity: 0,
-            duration: 0.001,
-            stagger: { amount: 0.5, from: "random" },
-            onComplete() {
-                navigateTo(url);
-            }
-        });
+        navigateTo(url);
     });
 
     window.onpageshow = function(event) {
