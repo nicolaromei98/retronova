@@ -4,7 +4,7 @@ $(document).ready(function() {
             gsap.set(".load_grid", { display: "grid" });
             gsap.to(".load_grid-item", {
                 opacity: 0,
-                duration: 0.001,
+                duration: 0.5, // Incrementato il tempo per assicurare che l'animazione sia visibile
                 stagger: { amount: 0.7, from: "random" },
                 onComplete: resolve
             });
@@ -12,7 +12,9 @@ $(document).ready(function() {
     }
 
     async function navigateTo(url) {
+        console.log("Starting animation out"); // Debug
         await animateOut();
+        console.log("Animation out completed, navigating to:", url); // Debug
         window.location.href = url;
     }
 
