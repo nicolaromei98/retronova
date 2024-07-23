@@ -1,14 +1,13 @@
 $(document).ready(function() {
     function animateOutAndRedirect(url) {
-        return new Promise((resolve) => {
-            gsap.set(".load_grid", { display: "grid" });
-            gsap.to(".load_grid-item", {
-                opacity: 0,
-                duration: 0.001,
-                stagger: { amount: 0.5, from: "random" },
-                onComplete: resolve
-            });
+        console.log('Starting animation out...');
+        gsap.set(".load_grid", { display: "grid" });
+        return gsap.to(".load_grid-item", {
+            opacity: 0,
+            duration: 0.5, // Aumentiamo la durata per vedere meglio l'animazione
+            stagger: { amount: 0.5, from: "random" }
         }).then(() => {
+            console.log('Animation complete, redirecting...');
             window.location.href = url;
         });
     }
@@ -41,6 +40,7 @@ $(document).ready(function() {
         if ($(this).prop("hostname") === window.location.host && $(this).attr("href").indexOf("#") === -1 && $(this).attr("target") !== "_blank") {
             event.preventDefault();
             let href = $(this).attr("href");
+            console.log('Link clicked, starting animation for: ', href);
             animateOutAndRedirect(href);
         }
     });
@@ -48,6 +48,7 @@ $(document).ready(function() {
     $(document).on("click", ".next_collection", function(event) {
         event.preventDefault();
         let href = $(this).attr("href");
+        console.log('Next collection clicked, starting animation for: ', href);
         animateOutAndRedirect(href);
     });
 
