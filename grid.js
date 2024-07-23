@@ -1,9 +1,9 @@
 $(document).ready(function() {
     function t(t) {
         gsap.set(".load_grid", { display: "grid" });
-        gsap.fromTo(".load_grid-item", { opacity: 1 }, {
-            opacity: 0,
-            duration: 0.5,
+        gsap.fromTo(".load_grid-item", { opacity: 0 }, {
+            opacity: 1,
+            duration: 0.001,
             stagger: { amount: 0.5, from: "random" },
             onComplete() {
                 window.location.href = t;
@@ -27,9 +27,9 @@ $(document).ready(function() {
         $(".load_grid-item").css("background-color", color);
     })();
     
-    gsap.fromTo(".load_grid-item", { opacity: 0 }, {
-        opacity: 1,
-        duration: 0.5,
+    gsap.to(".load_grid-item", {
+        opacity: 0,
+        duration: 0.001,
         stagger: { amount: 0.7, from: "random" },
         onComplete() {
             gsap.set(".load_grid", { display: "none" });
@@ -47,9 +47,9 @@ $(document).ready(function() {
     $(document).on("click", ".next_collection", function(o) {
         o.preventDefault();
         let href = $(this).attr("href");
-        gsap.fromTo(".load_grid-item", { opacity: 1 }, {
+        gsap.to(".load_grid-item", {
             opacity: 0,
-            duration: 0.5,
+            duration: 0.001,
             stagger: { amount: 0.5, from: "random" },
             onComplete() {
                 t(href);
@@ -79,9 +79,9 @@ $(document).ready(function() {
             let nextCollection = collections[(collections.indexOf(currentCollection) + 1) % collections.length];
             if (nextCollection) {
                 let nextUrl = `/collections/${nextCollection.replace(/\s+/g, "-").toLowerCase()}`;
-                gsap.fromTo(".load_grid-item", { opacity: 1 }, {
+                gsap.to(".load_grid-item", {
                     opacity: 0,
-                    duration: 0.5,
+                    duration: 0.001,
                     stagger: { amount: 0.5, from: "random" },
                     onComplete() {
                         t(nextUrl);
