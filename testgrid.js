@@ -1,50 +1,53 @@
+// Primo Codice (GSAP)
 $(document).ready(function() {
-    function transitionOut(url) {
-        gsap.to(".load_grid-item", {
-            opacity: 0,
-            duration: 0.001,
-            stagger: { amount: 0.5, from: "random" },
-            onComplete: function() {
-                window.location.href = url;
-            }
-        });
-    }
-
-    function transitionIn() {
+    function transitionTo(url) {
         gsap.set(".load_grid", { display: "grid" });
         gsap.fromTo(".load_grid-item", 
             { opacity: 0 }, 
-            { opacity: 1, duration: 0.001, stagger: { amount: 0.5, from: "random" }}
+            { opacity: 1, duration: 0.001, stagger: { amount: 0.5, from: "random" }, onComplete: function() { window.location.href = url; } }
         );
     }
 
-    function setBackgroundColor() {
+    function handleBackgroundColor() {
         let collectionName = $("body").attr("data-collection");
         let color = "#070707";
         switch (collectionName) {
             case "Space Age Glam": color = "#FD8A46"; break;
             case "Atomic Allure": color = "#F3EDD8"; break;
             case "Quantum Glamour": color = "#A24EB5"; break;
-            case "Stellar Elegance": color = "#008AA1"; break;
+            case "Stellar Elegance": color = "#008AA1";
         }
         $(".load_grid-item").css("background-color", color);
     }
 
-    setBackgroundColor();
-    transitionIn();
+    handleBackgroundColor();
+
+    gsap.to(".load_grid-item", {
+        opacity: 0,
+        duration: 0.001,
+        stagger: { amount: 0.7, from: "random" },
+        onComplete: function() { gsap.set(".load_grid", { display: "none" }); }
+    });
 
     $("a").on("click", function(e) {
         if ($(this).prop("hostname") === window.location.host && $(this).attr("href").indexOf("#") === -1 && $(this).attr("target") !== "_blank") {
             e.preventDefault();
             let url = $(this).attr("href");
-            transitionOut(url);
+            transitionTo(url);
         }
     });
 
     $(document).on("click", ".next_collection", function(e) {
         e.preventDefault();
         let url = $(this).attr("href");
-        transitionOut(url);
+        gsap.to(".load_grid-item", {
+            opacity: 0,
+            duration: 0.001,
+            stagger: { amount: 0.5, from: "random" },
+            onComplete: function() {
+                transitionTo(url);
+            }
+        });
     });
 
     window.onpageshow = function(event) {
@@ -82,7 +85,14 @@ document.addEventListener("DOMContentLoaded", function() {
             let nextCollection = getNextCollection(currentCollection);
             if (nextCollection) {
                 let nextUrl = `/collections/${nextCollection.replace(/\s+/g, "-").toLowerCase()}`;
-                transitionOut(nextUrl);
+                gsap.to(".load_grid-item", {
+                    opacity: 0,
+                    duration: 0.001,
+                    stagger: { amount: 0.5, from: "random" },
+                    onComplete: function() {
+                        window.location.href = nextUrl;
+                    }
+                });
             }
         });
     }
