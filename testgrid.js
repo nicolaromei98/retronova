@@ -1,15 +1,18 @@
 $(document).ready(function() {
     // Funzione per gestire la transizione
     function transitionTo(url) {
+        console.log("Inizio transizione verso", url);
         gsap.set(".load_grid", { display: "grid" });
         gsap.fromTo(".load_grid-item", 
             { opacity: 0 }, 
             { opacity: 1, duration: 0.001, stagger: { amount: 0.5, from: "random" }, onComplete: function() {
+                console.log("Animazione di entrata completata");
                 gsap.to(".load_grid-item", {
                     opacity: 0,
                     duration: 0.001,
                     stagger: { amount: 0.5, from: "random" },
                     onComplete: function() {
+                        console.log("Animazione di uscita completata, reindirizzamento verso", url);
                         window.location.href = url;
                     }
                 });
@@ -28,6 +31,7 @@ $(document).ready(function() {
             case "Stellar Elegance": color = "#008AA1"; break;
         }
         $(".load_grid-item").css("background-color", color);
+        console.log("Colore di sfondo impostato a", color);
     }
 
     setBackgroundColor();
@@ -84,14 +88,8 @@ document.addEventListener("DOMContentLoaded", function() {
             let nextCollection = getNextCollection(currentCollection);
             if (nextCollection) {
                 let nextUrl = `/collections/${nextCollection.replace(/\s+/g, "-").toLowerCase()}`;
-                gsap.to(".load_grid-item", {
-                    opacity: 0,
-                    duration: 0.001,
-                    stagger: { amount: 0.5, from: "random" },
-                    onComplete: function() {
-                        window.location.href = nextUrl;
-                    }
-                });
+                console.log("Navigazione verso la prossima collezione:", nextUrl);
+                transitionTo(nextUrl);
             }
         });
     }
