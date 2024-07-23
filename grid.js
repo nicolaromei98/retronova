@@ -8,15 +8,15 @@ $(document).ready(function() {
         });
     }
 
-    function animateOut(targetUrl) {
+    function animateOut() {
         return new Promise((resolve) => {
             gsap.to(".load_grid-item", {
                 opacity: 0,
                 duration: 0.001,
-                stagger: { amount: 0.5, from: "random" },
+                stagger: { amount: 0.7, from: "random" },
                 onComplete: () => {
                     gsap.set(".load_grid", { display: "none" });
-                    resolve(targetUrl);
+                    resolve();
                 }
             });
         });
@@ -24,8 +24,8 @@ $(document).ready(function() {
 
     async function handleNavigation(event, url) {
         event.preventDefault();
-        let targetUrl = await animateOut(url);
-        window.location.href = targetUrl;
+        await animateOut();
+        window.location.href = url;
     }
 
     !function setCollectionColor() {
