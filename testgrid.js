@@ -1,32 +1,38 @@
-// Primo Codice (GSAP)
 $(document).ready(function() {
+    // Funzione per gestire la transizione
     function transitionTo(url) {
         gsap.set(".load_grid", { display: "grid" });
         gsap.fromTo(".load_grid-item", 
             { opacity: 0 }, 
-            { opacity: 1, duration: 0.001, stagger: { amount: 0.5, from: "random" }, onComplete: function() { window.location.href = url; } }
+            { opacity: 1, duration: 0.001, stagger: { amount: 0.5, from: "random" }, onComplete: function() {
+                gsap.to(".load_grid-item", {
+                    opacity: 0,
+                    duration: 0.001,
+                    stagger: { amount: 0.5, from: "random" },
+                    onComplete: function() {
+                        window.location.href = url;
+                    }
+                });
+            }}
         );
     }
 
-    !function setBackgroundColor() {
+    // Funzione per impostare il colore di sfondo
+    function setBackgroundColor() {
         let collectionName = $("body").attr("data-collection");
         let color = "#070707";
         switch (collectionName) {
             case "Space Age Glam": color = "#FD8A46"; break;
             case "Atomic Allure": color = "#F3EDD8"; break;
             case "Quantum Glamour": color = "#A24EB5"; break;
-            case "Stellar Elegance": color = "#008AA1";
+            case "Stellar Elegance": color = "#008AA1"; break;
         }
         $(".load_grid-item").css("background-color", color);
-    }();
+    }
 
-    gsap.to(".load_grid-item", {
-        opacity: 0,
-        duration: 0.001,
-        stagger: { amount: 0.7, from: "random" },
-        onComplete: function() { gsap.set(".load_grid", { display: "none" }); }
-    });
+    setBackgroundColor();
 
+    // Evento per link normali
     $("a").on("click", function(e) {
         if ($(this).prop("hostname") === window.location.host && $(this).attr("href").indexOf("#") === -1 && $(this).attr("target") !== "_blank") {
             e.preventDefault();
@@ -35,19 +41,14 @@ $(document).ready(function() {
         }
     });
 
+    // Evento per il pulsante di navigazione tra collezioni
     $(document).on("click", ".next_collection", function(e) {
         e.preventDefault();
         let url = $(this).attr("href");
-        gsap.to(".load_grid-item", {
-            opacity: 0,
-            duration: 0.001,
-            stagger: { amount: 0.5, from: "random" },
-            onComplete: function() {
-                transitionTo(url);
-            }
-        });
+        transitionTo(url);
     });
 
+    // Gestione del back-forward cache
     window.onpageshow = function(event) {
         if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
             window.location.reload();
