@@ -1,17 +1,19 @@
 $(document).ready(function() {
-    function t(url) {
-        gsap.set(".load_grid", { display: "grid" });
-        gsap.fromTo(".load_grid-item", { opacity: 0 }, {
-            opacity: 1,
-            duration: 0.001,
-            stagger: { amount: 0.5, from: "random" },
-            onComplete: function() {
-                window.location.href = url;
-            }
+    function animateOutAndRedirect(url) {
+        return new Promise((resolve) => {
+            gsap.set(".load_grid", { display: "grid" });
+            gsap.to(".load_grid-item", {
+                opacity: 0,
+                duration: 0.001,
+                stagger: { amount: 0.5, from: "random" },
+                onComplete: resolve
+            });
+        }).then(() => {
+            window.location.href = url;
         });
     }
 
-    !function updateBackgroundColor() {
+    function updateBackgroundColor() {
         let collection = $("body").attr("data-collection");
         let backgroundColor = "#070707";
 
@@ -31,43 +33,22 @@ $(document).ready(function() {
         }
 
         $(".load_grid-item").css("background-color", backgroundColor);
-    }();
+    }
 
-    gsap.to(".load_grid-item", {
-        opacity: 0,
-        duration: 0.001,
-        stagger: { amount: 0.7, from: "random" },
-        onComplete: function() {
-            gsap.set(".load_grid", { display: "none" });
-        }
-    });
+    updateBackgroundColor();
 
     $("a").on("click", function(event) {
         if ($(this).prop("hostname") === window.location.host && $(this).attr("href").indexOf("#") === -1 && $(this).attr("target") !== "_blank") {
             event.preventDefault();
             let href = $(this).attr("href");
-            gsap.to(".load_grid-item", {
-                opacity: 0,
-                duration: 0.001,
-                stagger: { amount: 0.5, from: "random" },
-                onComplete: function() {
-                    t(href);
-                }
-            });
+            animateOutAndRedirect(href);
         }
     });
 
     $(document).on("click", ".next_collection", function(event) {
         event.preventDefault();
         let href = $(this).attr("href");
-        gsap.to(".load_grid-item", {
-            opacity: 0,
-            duration: 0.001,
-            stagger: { amount: 0.5, from: "random" },
-            onComplete: function() {
-                t(href);
-            }
-        });
+        animateOutAndRedirect(href);
     });
 
     window.onpageshow = function(event) {
